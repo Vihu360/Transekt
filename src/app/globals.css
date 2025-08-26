@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap');
 
 :root {
   --background: #ffffff;
@@ -24,3 +25,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.ant-input:focus,
+.ant-input:hover,
+.ant-input:active {
+  border-color: #314c35 !important;
+}
+

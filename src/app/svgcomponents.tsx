@@ -6,7 +6,7 @@ interface Props {
 }
 
 interface SVGDictionary {
-  //@ts-ignore
+  //@ts-expect-error - Index signature allows dynamic string keys
   [key: string]: (color: string) => JSX.Element;
 }
 

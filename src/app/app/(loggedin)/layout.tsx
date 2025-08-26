@@ -60,11 +60,6 @@ const CloseIcon = ({ className = "w-5 h-5" }) => (
   </svg>
 );
 
-const BackArrowIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
-  </svg>
-);
 
 const SearchIcon = ({ className = "w-5 h-5" }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -139,10 +134,8 @@ const NavItem = ({ item, isActive, onClick, isMobile = false }) => (
 const Layout = ({ 
   children,
   user = { firstName: "John", lastName: "Doe", email: "john@example.com" },
-  showBackArrow = false,
   showSearch = false,
   searchPlaceholder = "Search...",
-  onBackClick,
   unreadCount = 0
 }) => {
   const router = useRouter();
@@ -212,14 +205,7 @@ const Layout = ({
     }
   };
 
-  // Handle back button
-  const handleBackClick = () => {
-    if (onBackClick) {
-      onBackClick();
-    } else {
-      router.back();
-    }
-  };
+
 
   // User menu items
   const userMenuItems = [
@@ -299,18 +285,11 @@ const Layout = ({
         </div>
 
         {/* Page Header */}
-        {(showBackArrow || showSearch) && (
+        {(showSearch) && (
           <div className="px-4 pb-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                {showBackArrow && (
-                  <button
-                    onClick={handleBackClick}
-                    className="p-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors duration-200"
-                  >
-                    <BackArrowIcon />
-                  </button>
-                )}
+      
               </div>
             </div>
 

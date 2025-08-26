@@ -247,7 +247,7 @@ export default function ForgotPasswordPage() {
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold text-neutral-900">
-                We've got you covered
+                We&apos;ve got you covered
               </h2>
                              <p className="text-neutral-600 max-w-md leading-relaxed">
                  Don&apos;t let a forgotten password slow you down. Our secure reset process gets you back to managing your payment data in no time.

@@ -17,8 +17,8 @@ export default function Home() {
             <a href="#docs" className="hover:text-neutral-900">Docs</a>
           </nav>
                      <div className="flex flex-wrap items-center gap-3">
-                <a href="#demo" className="inline-flex h-9 items-center rounded-md border border-neutral-300 px-5 text-sm font-medium text-neutral-900 hover:bg-neutral-50">Sign in</a>
-                <a href="#get-started" className="inline-flex h-9 items-center rounded-md bg-neutral-900 px-5 text-white text-sm font-medium hover:bg-neutral-800">Join beta</a>
+                <a href="/auth/login" className="inline-flex h-9 items-center rounded-md border border-neutral-300 px-5 text-sm font-medium text-neutral-900 hover:bg-neutral-50">Sign in</a>
+                <a href="/auth/signup" className="inline-flex h-9 items-center rounded-md bg-neutral-900 px-5 text-white text-sm font-medium hover:bg-neutral-800">Join beta</a>
               </div>
         </div>
       </header>
@@ -42,8 +42,8 @@ export default function Home() {
                 With Transekt, all your payments—whether from gateways, PSPs, or offline excel sheets—come together in one clean dashboard. We turn fragmented transaction data into actionable analytics, advanced insights, and anomaly detection, so finance and product teams can operate with clarity and certainty.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <a href="#get-started" className="inline-flex h-11 items-center rounded-md bg-neutral-900 px-5 text-white text-sm font-medium hover:bg-neutral-800">Get started free</a>
-                <a href="#demo" className="inline-flex h-11 items-center rounded-md border border-neutral-300 px-5 text-sm font-medium text-neutral-900 hover:bg-neutral-50">See live demo</a>
+                <a href="/auth/signup" className="inline-flex h-11 items-center rounded-md bg-neutral-900 px-5 text-white text-sm font-medium hover:bg-neutral-800">Get started free</a>
+                <a href="/auth/login" className="inline-flex h-11 items-center rounded-md border border-neutral-300 px-5 text-sm font-medium text-neutral-900 hover:bg-neutral-50">See live demo</a>
               </div>
                              <div className="mt-6 flex items-center gap-6 text-xs text-neutral-500">
                  <div className="flex items-center gap-2"><span className="h-5 w-5 rounded bg-emerald-100 text-emerald-700 grid place-items-center text-[10px]">8</span> Data sources</div>
@@ -246,7 +246,7 @@ export default function Home() {
               <div className="rounded-xl border border-neutral-200 bg-white p-6 text-center">
                 <div className="text-4xl font-semibold">$0</div>
                 <div className="text-xs text-neutral-500">per month to start</div>
-                <a href="#get-started" className="mt-4 inline-flex h-11 items-center justify-center rounded-md bg-neutral-900 px-5 text-white text-sm font-medium hover:bg-neutral-800 w-full">Create account</a>
+                                 <a href="/auth/signup" className="mt-4 inline-flex h-11 items-center justify-center rounded-md bg-neutral-900 px-5 text-white text-sm font-medium hover:bg-neutral-800 w-full">Create account</a>
                 <p className="mt-2 text-xs text-neutral-500">No card required</p>
               </div>
             </div>

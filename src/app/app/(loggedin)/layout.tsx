@@ -1,91 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Drawer, Dropdown, Avatar } from "antd";
+import { Drawer, Dropdown } from "antd";
 import { authApi } from "@/utils/api";
-
-// Custom Icons
-const DashboardIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-    <path d="M10 6h10" />
-    <path d="M4 12h16" />
-    <path d="M7 12h13" />
-    <path d="M4 18h10" />
-  </svg>
-);
-
-const AnalyticsIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-  </svg>
-);
-
-const GatewaysIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-  </svg>
-);
-
-const SettingsIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-  </svg>
-);
-
-const HamburgerIcon = ({ className = "w-6 h-6" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-  </svg>
-);
-
-const BellIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-  </svg>
-);
-
-const CloseIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-  </svg>
-);
-
-
-const SearchIcon = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-  </svg>
-);
-
-const DownArrowIcon = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M7 10l5 5 5-5z"/>
-  </svg>
-);
-
-const TransactionsIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-    <path d="M22 10v6a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-6h20zm-14.99 4h-.01a1 1 0 1 0 .01 2a1 1 0 0 0 0 -2zm5.99 0h-2a1 1 0 0 0 0 2h2a1 1 0 0 0 0 -2zm5 -10a4 4 0 0 1 4 4h-20a4 4 0 0 1 4 -4h12z" />
-  </svg>
-);
+import SVGComponent from "@/app/svgcomponents";
 
 // User Avatar Component
 const UserAvatar = ({ name, size = "sm" }) => {
@@ -137,54 +55,36 @@ const Layout = ({
 }: {
   children: React.ReactNode
 }) => {
-      // These should come from your auth context or API calls, not props
-  const user = authApi.getCurrentUser();
-  const showSearch = false;
-  const searchPlaceholder = "Search...";
-  const unreadCount = 0;
   const router = useRouter();
   const pathname = usePathname();
   const [mobileDrawer, setMobileDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isClient, setIsClient] = useState(false);
 
-  console.log("user", user);
+  // Set client-side flag
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  // Navigation items
-  const navigationItems = [
-    {
-      key: "overview",
-      icon: <DashboardIcon />,
-      label: "Overview",
-      path: "/app/overview",
-    },
-    {
-      key: "transactions",
-      icon: <TransactionsIcon />,
-      label: "Transactions",
-      path: "/app/transactions",
-    },
-    {
-      key: "analytics",
-      icon: <AnalyticsIcon />,
-      label: "Analytics",
-      path: "/app/analytics",
-    },
-    {
-      key: "gateways",
-      icon: <GatewaysIcon />,
-      label: "Gateways",
-      path: "/app/gateways",
-    },
-    {
-      key: "settings",
-      icon: <SettingsIcon />,
-      label: "Settings",
-      path: "/app/settings",
-    },
-  ];
+  // Get user data on component mount (only on client)
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const currentUser = authApi.getCurrentUser();
+    if (currentUser) {
+      setUser(currentUser);
+    } else {
+      // If no user is found, redirect to login
+      authApi.logout();
+      router.push('/auth/login');
+    }
+  }, [router, isClient]);
 
   // Check if mobile on mount and resize
   useEffect(() => {
+    if (!isClient) return;
+    
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -192,7 +92,59 @@ const Layout = ({
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
+  }, [isClient]);
+
+  const showSearch = false;
+  const searchPlaceholder = "Search...";
+  const unreadCount = 0;
+
+  // Show loading during SSR or when no user on client
+  if (!isClient || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Navigation items
+  const navigationItems = [
+    {
+      key: "overview",
+      icon: <SVGComponent src="DashboardIcon" color="#000000" />,
+      label: "Overview",
+      path: "/app/overview",
+    },
+    {
+      key: "transactions",
+      icon: <SVGComponent src="TransactionsIcon" color="#000000" />,
+      label: "Transactions",
+      path: "/app/transactions",
+    },
+    {
+      key: "analytics",
+      icon: <SVGComponent src="AnalyticsIcon" color="#000000" />,
+      label: "Analytics",
+      path: "/app/analytics",
+    },
+    {
+      key: "gateways",
+      icon: <SVGComponent src="GatewaysIcon" color="#000000" />,
+      label: "Gateways",
+      path: "/app/gateways",
+    },
+    {
+      key: "settings",
+      icon: <SVGComponent src="SettingsIcon" color="#000000" />,
+      label: "Settings",
+      path: "/app/settings",
+    },
+  ];
+
+ 
 
   // Get active navigation key based on current path
   const getActiveKey = () => {
@@ -210,8 +162,6 @@ const Layout = ({
       setMobileDrawer(false);
     }
   };
-
-
 
   // User menu items
   const userMenuItems = [
@@ -232,8 +182,8 @@ const Layout = ({
         break;
       case "logout":
         // Add your logout logic here
-        localStorage.clear();
-        router.push("/login");
+        authApi.logout();
+        router.push("/auth/login");
         break;
       default:
         break;
@@ -257,7 +207,7 @@ const Layout = ({
               onClick={() => setMobileDrawer(true)}
               className="p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors duration-200"
             >
-              <HamburgerIcon />
+              <SVGComponent src="HamburgerIcon" color="#000000" />
             </button>
             <h1 className="text-xl font-bold text-slate-800">Transekt</h1>
           </div>
@@ -266,7 +216,7 @@ const Layout = ({
             {/* Notification Bell */}
             <div className="relative">
               <button className="p-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors duration-200">
-                <BellIcon />
+                <SVGComponent src="BellIcon" color="#000000" />
                 {unreadCount > 0 && (
                   <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center font-medium">
                     {unreadCount > 99 ? "99+" : unreadCount}
@@ -307,7 +257,7 @@ const Layout = ({
                   className="w-full pl-4 pr-10 py-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-                  <SearchIcon />
+                  <SVGComponent src="SearchIcon" color="#000000" />
                 </div>
               </div>
             )}
@@ -335,7 +285,7 @@ const Layout = ({
                 onClick={() => setMobileDrawer(false)}
                 className="p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors duration-200"
               >
-                <CloseIcon />
+                <SVGComponent src="CloseIcon" color="#000000" />
               </button>
             </div>
 
@@ -373,7 +323,7 @@ const Layout = ({
                       {user.email}
                     </div>
                   </div>
-                  <DownArrowIcon className="text-slate-400" />
+                  <SVGComponent src="DownArrowIcon" color="#000000" />
                 </button>
               </Dropdown>
             </div>
@@ -437,7 +387,7 @@ const Layout = ({
                     className="w-80 pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-                    <SearchIcon />
+                    <SVGComponent src="SearchIcon" color="#000000" />
                   </div>
                 </div>
               )}

@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie';
 
+
 // API base URL - you can configure this based on your environment
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
@@ -112,6 +113,7 @@ export const apiClient = new ApiClient(API_BASE_URL);
 
 // Auth API functions
 export const authApi = {
+
   // Signup user
   async signup(data: SignupRequest): Promise<ApiResponse<SignupResponse>> {
     const response = await apiClient.post<SignupResponse>('/v1/users/', data);
@@ -120,6 +122,7 @@ export const authApi = {
       // Store user data in cookies
       Cookies.set('user', JSON.stringify(response.data), { expires: 7 }); // 7 days
       Cookies.set('isAuthenticated', 'true', { expires: 7 });
+      Cookies.set('token', '654164144e5e166c00b52cfe71c36ff1fb232155', { expires: 7 });
     }
     
     return response;
@@ -132,6 +135,7 @@ export const authApi = {
     if (response.data) {
       Cookies.set('user', JSON.stringify(response.data), { expires: 7 });
       Cookies.set('isAuthenticated', 'true', { expires: 7 });
+      Cookies.set('token', '654164144e5e166c00b52cfe71c36ff1fb232155', { expires: 7 });
     }
     
     return response;
@@ -141,6 +145,7 @@ export const authApi = {
   logout(): void {
     Cookies.remove('user');
     Cookies.remove('isAuthenticated');
+    Cookies.remove('token');
   },
 
   // Get current user from cookies
@@ -166,7 +171,7 @@ export const authApi = {
 export const userApi = {
   // Get user profile
   async getProfile(): Promise<ApiResponse<User>> {
-    return apiClient.get<User>('/v1/users/profile/');
+    return apiClient.get<User>('/v1/users/me/');
   },
 
   // Update user profile
@@ -176,8 +181,10 @@ export const userApi = {
 };
 
 // Export all API functions
-export default {
+const api = {
   auth: authApi,
   user: userApi,
   client: apiClient,
 };
+
+export default api;

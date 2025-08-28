@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Drawer, Dropdown, Avatar } from "antd";
+import { authApi } from "@/utils/api";
 
 // Custom Icons
 const DashboardIcon = () => (
@@ -132,16 +133,21 @@ const NavItem = ({ item, isActive, onClick, isMobile = false }) => (
 
 // Main Layout Component
 const Layout = ({ 
-  children,
-  user = { firstName: "John", lastName: "Doe", email: "john@example.com" },
-  showSearch = false,
-  searchPlaceholder = "Search...",
-  unreadCount = 0
+  children
+}: {
+  children: React.ReactNode
 }) => {
+      // These should come from your auth context or API calls, not props
+  const user = authApi.getCurrentUser();
+  const showSearch = false;
+  const searchPlaceholder = "Search...";
+  const unreadCount = 0;
   const router = useRouter();
   const pathname = usePathname();
   const [mobileDrawer, setMobileDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  console.log("user", user);
 
   // Navigation items
   const navigationItems = [
@@ -278,7 +284,7 @@ const Layout = ({
               placement="bottomRight"
             >
               <button className="flex items-center">
-                <UserAvatar name={user.firstName} />
+                <UserAvatar name={user?.name} />
               </button>
             </Dropdown>
           </div>
@@ -358,10 +364,10 @@ const Layout = ({
                 placement="topRight"
               >
                 <button className="w-full flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors duration-200">
-                  <UserAvatar name={user.firstName} />
+                  <UserAvatar name={user.name} />
                   <div className="flex-1 text-left">
                     <div className="text-slate-800 font-medium">
-                      {user.firstName} {user.lastName}
+                      {user.name}
                     </div>
                     <div className="text-slate-500 text-sm">
                       {user.email}
@@ -446,8 +452,8 @@ const Layout = ({
               placement="bottom"
             >
               <button className="flex items-center gap-3 justify-center text-slate-700 cursor-pointer hover:text-slate-900">
-                <Avatar size={20} />
-                <p className="font-medium">{user.firstName + " " + user.lastName}</p>
+                <UserAvatar name={user?.name} />
+                <p className="font-medium">{user.name}</p>
               </button>
             </Dropdown>
               </div>

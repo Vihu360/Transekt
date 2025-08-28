@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { message } from "antd";
+import { authApi } from "@/utils/api";
+import { safeValidateSignupForm, validateApiSignup, type SignupFormData, type ApiSignupRequest } from "@/utils/validation";
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [formData, setFormData] = useState<SignupFormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -16,15 +22,110 @@ export default function SignupPage() {
   });
 
   const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState<Partial<Record<keyof SignupFormData, string>>>({});
+  const [isLoading, setIsLoading] = useState(false);
   const totalSteps = 3;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateStep = (currentStep: number): boolean => {
+    const newErrors: Partial<Record<keyof SignupFormData, string>> = {};
+    
+    if (currentStep === 1) {
+      if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+      if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+      if (!formData.email.trim()) newErrors.email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = "Please enter a valid email address";
+      }
+    } else if (currentStep === 2) {
+      if (!formData.password) newErrors.password = "Password is required";
+      else if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+        newErrors.password = "Password must contain uppercase, lowercase, and number";
+      }
+      if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password";
+      else if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Passwords don't match";
+      }
+          } else if (currentStep === 3) {
+        if (!formData.acceptTerms) newErrors.acceptTerms = "You must accept the terms and conditions";
+      }
+
+    setErrors(newErrors);
+    
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (step < totalSteps) {
-      setStep(step + 1);
-    } else {
-      // Handle final signup logic here
-      console.log("Signup attempt:", formData);
+    e.stopPropagation();
+    
+    // Explicitly check if this is coming from the submit button
+    const submitter = (e.nativeEvent as SubmitEvent)?.submitter as HTMLButtonElement;
+    
+    // Only allow submission if it's from the submit button on step 3
+    if (step !== totalSteps || !submitter || submitter.type !== 'submit') {
+      return;
+    }
+
+    // Final validation for all steps
+    const validation = safeValidateSignupForm(formData);
+    if (!validation.success) {
+      const newErrors: Partial<Record<keyof SignupFormData, string>> = {};
+      validation.error.issues.forEach((err) => {
+        if (err.path[0]) {
+          newErrors[err.path[0] as keyof SignupFormData] = err.message;
+        }
+      });
+      setErrors(newErrors);
+      messageApi.error("Please fix all validation errors before submitting");
+      return;
+    }
+
+    // Show loading message
+    messageApi.loading("Creating your account...", 0);
+    
+    // Proceed with signup
+    await handleSignup();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 4000);
+  };
+
+  const handleSignup = async () => {
+    setIsLoading(true);
+
+    try {
+      // Prepare data for API
+      const apiData: ApiSignupRequest = {
+        email: formData.email,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        password: formData.password,
+      };
+
+      // Validate API data
+      const validatedData = validateApiSignup(apiData);
+
+      // Call signup API
+      const response = await authApi.signup(validatedData);
+
+      if (response.error) {
+        messageApi.destroy(); // Clear loading message
+        messageApi.error(response.error);
+        return;
+      }
+
+      if (response.data) {
+        messageApi.destroy(); // Clear loading message
+        // Success! Show success message and redirect
+        messageApi.success("Account created successfully!");
+        router.push("/app/overview");
+      }
+    } catch (error) {
+      messageApi.destroy(); // Clear loading message
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      messageApi.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -34,17 +135,44 @@ export default function SignupPage() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name as keyof SignupFormData]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+      // Show info message that error was cleared
+      // messageApi.info("Error cleared");
+    }
   };
 
   const nextStep = () => {
-    if (step < totalSteps) {
+    if (validateStep(step)) {
       setStep(step + 1);
+      // messageApi.success(`Step ${step + 1} of ${totalSteps}`);
     }
   };
 
   const prevStep = () => {
     if (step > 1) {
+      // Clear fields based on which step we're going back from
+      if (step === 2) {
+        // Going back from step 2, clear password fields
+        setFormData(prev => ({
+          ...prev,
+          password: "",
+          confirmPassword: ""
+        }));
+      } else if (step === 3) {
+        // Going back from step 3, clear checkbox
+        setFormData(prev => ({
+          ...prev,
+          acceptTerms: false,
+          password: "",
+          confirmPassword: ""
+        }));
+      }
+      
       setStep(step - 1);
+      // messageApi.info(`Step ${step - 1} of ${totalSteps}`);
     }
   };
 
@@ -83,9 +211,14 @@ export default function SignupPage() {
                   required
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                  className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 text-neutral-900 placeholder-neutral-500 ${
+                    errors.firstName ? 'border-red-500' : 'border-neutral-300'
+                  }`}
                   placeholder="Enter your first name"
                 />
+                {errors.firstName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
@@ -99,9 +232,14 @@ export default function SignupPage() {
                   required
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                  className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 text-neutral-900 placeholder-neutral-500 ${
+                    errors.lastName ? 'border-red-500' : 'border-neutral-300'
+                  }`}
                   placeholder="Enter your last name"
                 />
+                {errors.lastName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+                )}
               </div>
             </div>
             <div>
@@ -116,9 +254,14 @@ export default function SignupPage() {
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 text-neutral-900 placeholder-neutral-500 ${
+                  errors.email ? 'border-red-500' : 'border-neutral-300'
+                }`}
                 placeholder="Enter your email"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
             <div>
               <label htmlFor="companyName" className="block text-sm font-medium text-neutral-700 mb-2">
@@ -131,7 +274,7 @@ export default function SignupPage() {
                 autoComplete="organization"
                 value={formData.companyName}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                className="w-full px-4 py-2 border border-neutral-300 rounded-lg transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
                 placeholder="Enter your company name"
               />
             </div>
@@ -152,12 +295,17 @@ export default function SignupPage() {
                 required
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 text-neutral-900 placeholder-neutral-500 ${
+                  errors.password ? 'border-red-500' : 'border-neutral-300'
+                }`}
                 placeholder="Create a strong password"
               />
               <div className="mt-2 text-xs text-neutral-500">
                 Must be at least 8 characters with uppercase, lowercase, and number
               </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
             </div>
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
@@ -171,9 +319,14 @@ export default function SignupPage() {
                 required
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 text-neutral-900 placeholder-neutral-500 ${
+                  errors.confirmPassword ? 'border-red-500' : 'border-neutral-300'
+                }`}
                 placeholder="Confirm your password"
               />
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+              )}
             </div>
           </div>
         );
@@ -202,6 +355,9 @@ export default function SignupPage() {
                   </Link>
                 </label>
               </div>
+              {errors.acceptTerms && (
+                <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>
+              )}
               <div className="flex items-start">
                 <input
                   id="acceptMarketing"
@@ -222,7 +378,7 @@ export default function SignupPage() {
               <ul className="text-sm text-neutral-600 space-y-1">
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                  Free 14-day trial
+                  Free 30-day trial
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
@@ -243,9 +399,10 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-white flex">
+      {contextHolder}
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center px-6 sm:px-8 lg:px-12">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-md space-y-8 pt-16">
           {/* Header */}
           <div className="text-center">
             <div className="flex justify-center mb-6">
@@ -262,15 +419,31 @@ export default function SignupPage() {
               Create your account
             </h1>
             <p className="mt-2 text-sm text-neutral-600">
-              Start your 14-day free trial. No credit card required.
+              Start your 30-day free trial. No credit card required.
             </p>
           </div>
 
           {/* Step Indicator */}
           {renderStepIndicator()}
 
+          {/* API Error Display */}
+          {/* {apiError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-600">{apiError}</p>
+            </div>
+          )} */}
+
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form 
+            onSubmit={handleSubmit} 
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && step < totalSteps) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
+            className="space-y-6"
+          >
             {renderStepContent()}
 
             {/* Navigation Buttons */}
@@ -279,17 +452,33 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="flex-1 py-3 px-4 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors duration-200"
+                  disabled={isLoading}
+                  className="flex-1 py-3 px-4 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Back
                 </button>
               )}
               <button
                 type={step === totalSteps ? "submit" : "button"}
-                onClick={step < totalSteps ? nextStep : undefined}
-                className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 transition-colors duration-200"
+                onClick={step < totalSteps ? (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  nextStep();
+                } : undefined}
+                disabled={isLoading}
+                className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-br from-[#1a4d70] via-[#165aa0] to-[#0a2b90] cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {step === totalSteps ? "Create account" : "Continue"}
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {step === totalSteps ? "Creating account..." : "Loading..."}
+                  </span>
+                ) : (
+                  step === totalSteps ? "Create account" : "Continue"
+                )}
               </button>
             </div>
           </form>

@@ -11,22 +11,21 @@ export default function GatewayComparison() {
         label: 'Payment Gateway Usage',
         data: [11, 16, 7, 3, 14],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.5)',
-          'rgba(255, 159, 64, 0.5)',
-          'rgba(255, 205, 86, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
-          'rgba(54, 162, 235, 0.5)'
+          "rgba(30, 58, 138, 0.85)",  // Deep Navy Blue
+          "rgba(37, 99, 235, 0.8)",   // Royal Blue
+          "rgba(59, 130, 246, 0.75)", // Bright Azure
+          "rgba(96, 165, 250, 0.7)",  // Sky Blue
+          "rgba(147, 197, 253, 0.65)" // Light Blue
         ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(255, 205, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(54, 162, 235, 1)'
-        ],
-        borderWidth: 1
+        
+        
+        
+        
+      
+        borderWidth: 1.5
       }
     ]
+    
   };
 
   const options = {
@@ -81,8 +80,16 @@ export default function GatewayComparison() {
   };
 
   return (
-    <div className="w-full h-[400px] flex items-center justify-center">
-      <PolarChart data={data} options={options} />
+    <div className="w-full h-full flex flex-col">
+      {/* Header */}
+      <div className="mb-3">
+        <h3 className="text-md font-semibold text-gray-900">Payment Gateway Usage</h3>
+      </div>
+      
+      {/* Chart */}
+      <div className="flex-1 flex items-center justify-center">
+        <PolarChart data={data} options={options} />
+      </div>
     </div>
   );
 }

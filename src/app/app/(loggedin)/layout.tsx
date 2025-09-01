@@ -133,8 +133,8 @@ const Layout = ({
     {
       key: "gateways",
       icon: <SVGComponent src="GatewaysIcon" color="#000000" />,
-      label: "Gateways",
-      path: "/app/gateways",
+      label: "Providers",
+      path: "/app/providers",
     },
     {
       key: "settings",
@@ -373,43 +373,7 @@ const Layout = ({
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden bg-slate-50">
         {/* Header */}
-        <header className="bg-white">
-          <div className="flex items-center justify-between px-6 py-2">
-            <div className="flex items-center gap-4">
-            </div>
-
-            <div className="flex items-center gap-4">
-              {showSearch && (
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder={searchPlaceholder}
-                    className="w-80 pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-                    <SVGComponent src="SearchIcon" color="#000000" />
-                  </div>
-                </div>
-              )}
-
-              {/* Notification Bell */}
-              <div className="relative border border-slate-200 rounded-lg px-4 py-1 cursor-pointer hover:bg-slate-50 transition-colors duration-200">
-                <Dropdown
-              menu={{ 
-                items: userMenuItems, 
-                onClick: handleUserMenuClick 
-              }}
-              placement="bottom"
-            >
-              <button className="flex items-center gap-3 justify-center text-slate-700 cursor-pointer hover:text-slate-900">
-                <UserAvatar name={user?.name} />
-                <p className="font-medium">{user.name}</p>
-              </button>
-            </Dropdown>
-              </div>
-            </div>
-          </div>
-        </header>
+        
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-slate-50">

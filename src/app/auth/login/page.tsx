@@ -2,18 +2,50 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { authApi } from "@/utils/api";
+import { message } from "antd";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt:", formData);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await authApi.login({
+        email: formData.email,
+        password: formData.password,
+        rememberMe: formData.rememberMe,
+      });
+
+      if (response.error) {
+        messageApi.destroy(); // Clear loading message
+        messageApi.error("The email or password is incorrect");
+        return;
+      }
+
+      if (response.data) {
+        // The authApi.login function already handles storing the user data and token in cookies
+        // Redirect to overview page on successful login
+        router.push("/app/overview");
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Login failed. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,6 +58,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-white flex">
+      {contextHolder}
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center px-6 sm:px-8 lg:px-12">
         <div className="w-full max-w-md space-y-8">
@@ -51,6 +84,21 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
                 Email address
@@ -61,9 +109,10 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
+                disabled={isLoading}
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                className="w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Enter your email"
               />
             </div>
@@ -78,9 +127,10 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
+                disabled={isLoading}
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500"
+                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-neutral-900 focus:border-neutral-900 transition-colors duration-200 text-neutral-900 placeholder-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Enter your password"
               />
             </div>
@@ -91,11 +141,12 @@ export default function LoginPage() {
                   id="rememberMe"
                   name="rememberMe"
                   type="checkbox"
+                  disabled={isLoading}
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-neutral-900 focus:ring-neutral-900 border-neutral-300 rounded"
+                  className="h-4 w-4 text-neutral-900 cursor-pointer focus:ring-neutral-900 border-neutral-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 />
-                <label htmlFor="rememberMe" className="ml-2 block text-sm text-neutral-700">
+                <label htmlFor="rememberMe" className="ml-2 cursor-pointer block text-sm text-neutral-700">
                   Remember me
                 </label>
               </div>
@@ -109,9 +160,20 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 transition-colors duration-200"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {isLoading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing in...
+                </div>
+              ) : (
+                "Sign in"
+              )}
             </button>
           </form>
 

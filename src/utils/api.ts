@@ -16,12 +16,14 @@ export interface SignupRequest {
   email: string;
   name: string;
   password: string;
+  token: string;
 }
 
 export interface SignupResponse {
   email: string;
   name: string;
   password: string;
+  token: string;
 }
 
 export interface User {
@@ -29,6 +31,8 @@ export interface User {
   email: string;
   name: string;
   companyName?: string;
+  token: string;
+  user: User;
 }
 
 // Generic API client
@@ -115,29 +119,41 @@ export const apiClient = new ApiClient(API_BASE_URL);
 export const authApi = {
 
   // Signup user
-  async signup(data: SignupRequest): Promise<ApiResponse<SignupResponse>> {
+  async signup(data: SignupRequest & { rememberMe?: boolean }): Promise<ApiResponse<SignupResponse>> {
     const response = await apiClient.post<SignupResponse>('/v1/users/', data);
-    
+
     if (response.data) {
-      // Store user data in cookies
-      Cookies.set('user', JSON.stringify(response.data), { expires: 7 }); // 7 days
-      Cookies.set('isAuthenticated', 'true', { expires: 7 });
-      Cookies.set('token', '654164144e5e166c00b52cfe71c36ff1fb232155', { expires: 7 });
+      const cookieOptions = data.rememberMe
+        ? { expires: 30 }
+        : {};
+
+      Cookies.set('user', JSON.stringify(response.data), cookieOptions);
+      Cookies.set('isAuthenticated', 'true', cookieOptions);
+      Cookies.set('token', response.data.token, cookieOptions);
+      Cookies.set('isNewUser', 'true');
     }
-    
+
     return response;
   },
 
   // Login user
-  async login(data: { email: string; password: string }): Promise<ApiResponse<User>> {
-    const response = await apiClient.post<User>('/v1/auth/login/', data);
-    
+  async login(data: { email: string; password: string; rememberMe?: boolean }): Promise<ApiResponse<User>> {
+    const response = await apiClient.post<User>('/v1/users/login/', {
+      email: data.email,
+      password: data.password,
+    });
+
     if (response.data) {
-      Cookies.set('user', JSON.stringify(response.data), { expires: 7 });
-      Cookies.set('isAuthenticated', 'true', { expires: 7 });
-      Cookies.set('token', '654164144e5e166c00b52cfe71c36ff1fb232155', { expires: 7 });
+      const cookieOptions = data.rememberMe
+        ? { expires: 30 }
+        : {};
+
+      Cookies.set('user', JSON.stringify(response?.data?.user), cookieOptions);
+      Cookies.set('isAuthenticated', 'true', cookieOptions);
+      Cookies.set('token', response.data.token, cookieOptions);
+      Cookies.set('isNewUser', 'true');
     }
-    
+
     return response;
   },
 

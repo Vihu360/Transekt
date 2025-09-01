@@ -1,30 +1,35 @@
 "use client"
 import BarChart from '@/app/components/barChart';
+import { useState } from 'react';
 
 export default function DayWiseSuccessFailure() {
-  const labels = Array.from({ length: 12 }, (_, i) => `Aug ${i + 1}`); // Aug 1 to Aug 15
+  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  // State for toggling data series
+  const [showSuccess, setShowSuccess] = useState(true);
+  const [showFailure, setShowFailure] = useState(true);
   
 const chartData = {
   labels: labels,
   datasets: [
-    {
+    ...(showSuccess ? [{
       label: 'Success Payments',
-      data: [90, 75, 80, 60, 70, 85, 95, 50, 65, 80, 90, 75, 60, 70, 85],
-      backgroundColor: 'rgba(59, 130, 246, 0.5)', // Light blue, transparent
-      borderColor: 'rgba(37, 99, 235, 0.8)',     // Medium blue
-      borderWidth: 0,
-      borderRadius: { topLeft: 50, topRight: 50, bottomLeft: 0, bottomRight: 0 },
-      borderSkipped: false,
-    },
-    {
-      label: 'Failure Payments',
-      data: [20, 30, 25, 15, 20, 18, 22, 10, 15, 20, 25, 18, 15, 20, 18],
-      backgroundColor: 'rgba(16, 165, 245, 0.4)', // Sky blue, transparent
-      borderColor: 'rgba(3, 105, 161, 0.6)',     // Darker blue
+      data: [45, 52, 68, 55, 48, 62, 75, 82, 58, 65, 72, 60],
+      backgroundColor: '#2563EB', // Professional blue
+      borderColor: '#3B82F6',
       borderWidth: 0,
       borderRadius: 4,
       borderSkipped: false,
-    }
+    }] : []),
+    ...(showFailure ? [{
+      label: 'Failure Payments',
+      data: [12, 18, 22, 15, 20, 16, 25, 28, 18, 22, 24, 19],
+      backgroundColor: '#DC2626', // Professional green
+      borderColor: '#10B981',
+      borderWidth: 0,
+      borderRadius: 4,
+      borderSkipped: false,
+    }] : [])
   ]
 };
 
@@ -34,31 +39,32 @@ const chartData = {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
-        align: 'center',
-        labels: {
-          usePointStyle: true,
-          pointStyle: 'rect',
-          padding: 20,
-          boxWidth: 15,
-          boxHeight: 15,
-          font: {
-            size: 12,
-            family: 'Arial, sans-serif'
-          },
-          color: '#666'
-        }
+        display: false, // Hide legend since it's in the header
       },
-      title: {
-        display: true,
-        text: 'Success vs Failure Comparison',
-        font: {
-          size: 16,
-          weight: 'normal'
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.98)',
+        titleColor: '#1F2937',
+        bodyColor: '#374151',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: true,
+        titleFont: {
+          size: 14,
+          weight: '600'
         },
-        color: '#333',
-        padding: {
-          bottom: 20
+        bodyFont: {
+          size: 13,
+          weight: '500'
+        },
+        padding: 12,
+        callbacks: {
+          title: function(context) {
+            return context[0].label;
+          },
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.y}`;
+          }
         }
       }
     },
@@ -66,14 +72,17 @@ const chartData = {
       x: {
         grid: {
           display: false,
-          color: 'rgba(200, 200, 200, 0.3)',
-          lineWidth: 1
+        },
+        border: {
+          display: false,
         },
         ticks: {
-          color: '#666',
+          color: '#6B7280',
           font: {
-            size: 11
-          }
+            size: 12,
+            weight: '500'
+          },
+          padding: 8
         }
       },
       y: {
@@ -81,36 +90,85 @@ const chartData = {
         max: 100,
         grid: {
           display: true,
-          color: 'rgba(200, 200, 200, 0.3)',
-          lineWidth: 1
+          color: 'rgba(107, 114, 128, 0.1)',
+          lineWidth: 1,
+          drawBorder: false,
+        },
+        border: {
+          display: false,
         },
         ticks: {
-          stepSize: 10,
-          color: '#666',
+          stepSize: 20,
+          color: '#6B7280',
           font: {
-            size: 11
-          }
+            size: 12,
+            weight: '500'
+          },
+          padding: 8
         }
       }
     },
     layout: {
       padding: {
-        top: 10,
-        bottom: 10,
-        left: 10,
-        right: 10
+        top: 20,
+        bottom: 20,
+        left: 20,
+        right: 20
       }
     },
     elements: {
       bar: {
-        borderWidth: 0
+        borderWidth: 0,
+        borderRadius: 4
       }
     }
   };
 
   return (
-    <div className='w-full h-[400px]'>
-      <BarChart data={chartData} options={chartOptions} />
+    <div className='w-full bg-white overflow-hidden flex flex-col gap-5'>
+      {/* Chart Header */}
+      <div className='px-4 py-4'>
+        <div className='flex items-center justify-between'>
+          <div>
+            <h3 className='text-lg font-semibold text-gray-900'>Success vs Failure Comparison</h3>
+            <p className='text-sm text-gray-500 mt-1'>Monthly payment performance overview</p>
+          </div>
+          <div className='flex items-center space-x-4'>
+            {/* Interactive Legend */}
+            <div className='flex items-center space-x-4'>
+              <button 
+                onClick={() => setShowSuccess(!showSuccess)}
+                className={`flex items-center space-x-2 px-3 py-1 rounded-md transition-colors cursor-pointer ${
+                  showSuccess 
+                    ? 'bg-blue-50 text-[#2563EB] border border-blue-200' 
+                    : 'bg-gray-50 text-gray-400 border border-gray-200'
+                }`}
+              >
+                <div className={`w-3 h-3 rounded ${showSuccess ? 'bg-[#2563EB]' : 'bg-gray-300'}`}></div>
+                <span className='text-sm font-medium'>Success</span>
+              </button>
+              <button 
+                onClick={() => setShowFailure(!showFailure)}
+                className={`flex items-center space-x-2 px-3 py-1 rounded-md transition-colors cursor-pointer ${
+                  showFailure 
+                    ? 'bg-red-50 text-[#DC2626] border border-red-200' 
+                    : 'bg-gray-50 text-gray-400 border border-gray-200'
+                }`}
+              >
+                <div className={`w-3 h-3 rounded ${showFailure ? 'bg-[#DC2626]' : 'bg-gray-300'}`}></div>
+                <span className='text-sm font-medium'>Failure</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Chart Container */}
+      <div className='w-full h-[420px] flex flex-col items-end justify-end'>
+        <div className='w-full h-full flex flex-col items-end'>
+          <BarChart data={chartData} options={chartOptions} />
+        </div>
+      </div>
     </div>
   );
 }

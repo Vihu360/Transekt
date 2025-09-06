@@ -23,7 +23,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Karla', sans-serif;
 }
 
 .ant-input:focus,
@@ -84,4 +84,43 @@ body {
 .provider-config-modal .ant-switch-checked {
   background-color: #10b981;
 }
+
+/* remove default table row borders */
+.ant-table-tbody > tr > td {
+  border-bottom: none !important;
+}
+
+/* style selected row */
+.custom-selected-row td {
+  background-color: #e0f2fe; /* Tailwind blue-100 */
+}
+
+/* rounded corners for the first + last cell */
+.custom-selected-row td:first-child {
+  border-top-left-radius: 1rem;   /* rounded-2xl */
+  border-bottom-left-radius: 1rem;
+}
+
+.custom-selected-row td:last-child {
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+
+
+/* Ensure Ant Design components use Karla font */
+.ant-typography,
+.ant-btn,
+.ant-input,
+.ant-select,
+.ant-table,
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td,
+.ant-card,
+.ant-card-head,
+.ant-card-body {
+  font-family: 'Karla', sans-serif !important;
+}
+
+
 

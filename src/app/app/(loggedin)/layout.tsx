@@ -376,7 +376,8 @@ const Layout = ({
         
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-slate-50">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b backdrop-blur-2xl from-blue-200 via-slate-100 to-slate-50 min-h-screen">
+
           <div className="px-6 py-4">
             {children}
           </div>

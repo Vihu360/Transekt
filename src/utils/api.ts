@@ -16,7 +16,6 @@ export interface SignupRequest {
   email: string;
   name: string;
   password: string;
-  token: string;
 }
 
 export interface SignupResponse {
@@ -53,6 +52,40 @@ export interface CreateProviderRequest {
   provider: string;
   credentials: Record<string, string>;
   status: 'active' | 'revoked' | 'pending';
+}
+
+export interface Transaction {
+  id: number;
+  provider: string;
+  provider_txn_id: string;
+  user: number;
+  user_email: string;
+  user_name: string;
+  amount: string;
+  currency: string;
+  status: string;
+  type: string;
+  payment_method: string;
+  customer_id: string;
+  customer_email: string;
+  created_at: string;
+  updated_at: string;
+  raw_metadata?: Record<string, unknown>;
+}
+
+export interface TransactionFilters {
+  provider?: string[];
+  status?: string[];
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface TransactionResponse {
+  results: Transaction[];
+  count: number;
+  next?: string;
+  previous?: string;
 }
 
 // Generic API client
@@ -251,11 +284,46 @@ export const providerApi = {
   },
 };
 
+// Transaction API functions
+export const transactionApi = {
+  // Get transactions with filters
+  async getTransactions(filters: TransactionFilters = {}): Promise<ApiResponse<TransactionResponse | Transaction[]>> {
+    const params = new URLSearchParams();
+    
+    if (filters.provider && filters.provider.length > 0) {
+      params.append('provider', filters.provider.join(','));
+    }
+    
+    if (filters.status && filters.status.length > 0) {
+      params.append('status', filters.status.join(','));
+    }
+    
+    if (filters.page) {
+      params.append('page', filters.page.toString());
+    }
+    
+    if (filters.limit) {
+      params.append('limit', filters.limit.toString());
+    }
+
+    const queryString = params.toString();
+    const endpoint = `/v1/provider-transactions/${queryString ? `?${queryString}` : ''}`;
+    
+    return apiClient.get<TransactionResponse | Transaction[]>(endpoint);
+  },
+
+  // Get single transaction by ID
+  async getTransaction(id: number): Promise<ApiResponse<Transaction>> {
+    return apiClient.get<Transaction>(`/v1/provider-transactions/${id}/`);
+  },
+};
+
 // Export all API functions
 const api = {
   auth: authApi,
   user: userApi,
   provider: providerApi,
+  transaction: transactionApi,
   client: apiClient,
 };
 

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Form, message, Select } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
 import { providerApi, CreateProviderRequest } from '@/utils/api';
 
 interface ProviderConfigFormProps {

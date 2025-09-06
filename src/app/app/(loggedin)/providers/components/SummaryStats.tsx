@@ -4,7 +4,7 @@ import React from 'react';
 
 interface SummaryStatsProps {
   totalActive: number;
-  monthlyVolume: string;
+  monthlyVolume: number;
 }
 
 const SummaryStats: React.FC<SummaryStatsProps> = ({ totalActive, monthlyVolume }) => {
@@ -16,7 +16,7 @@ const SummaryStats: React.FC<SummaryStatsProps> = ({ totalActive, monthlyVolume 
       </div>
       <div className="flex items-center space-x-2">
         <span className="text-sm font-medium text-gray-600">Monthly Volume:</span>
-        <span className="text-lg font-bold text-gray-900">{monthlyVolume}</span>
+        <span className="text-lg font-bold text-gray-900">${monthlyVolume}K</span>
       </div>
     </div>
   );

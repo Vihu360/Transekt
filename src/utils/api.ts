@@ -35,6 +35,26 @@ export interface User {
   user: User;
 }
 
+export interface ProviderConnection {
+  id: number;
+  user_email: string;
+  user_name: string;
+  provider: string;
+  status: 'active' | 'revoked' | 'pending' | 'error';
+  created_at: string;
+  updated_at: string;
+  user: number;
+  success_rate?: number;
+  last_30_days_volume?: number;
+  credentials?: Record<string, string>;
+}
+
+export interface CreateProviderRequest {
+  provider: string;
+  credentials: Record<string, string>;
+  status: 'active' | 'revoked' | 'pending';
+}
+
 // Generic API client
 class ApiClient {
   private baseUrl: string;
@@ -49,8 +69,12 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
     
+    // Get token from cookies
+    const token = Cookies.get('token');
+    
     const defaultHeaders = {
       'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Token ${token}` }),
     };
 
     const config: RequestInit = {
@@ -102,6 +126,14 @@ class ApiClient {
   async put<T>(endpoint: string, data: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // PATCH request
+  async patch<T>(endpoint: string, data: unknown): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   }
@@ -196,10 +228,34 @@ export const userApi = {
   },
 };
 
+// Provider API functions
+export const providerApi = {
+  // Get all provider connections
+  async getProviderConnections(): Promise<ApiResponse<ProviderConnection[]>> {
+    return apiClient.get<ProviderConnection[]>('/v1/provider-connections/');
+  },
+
+  // Create new provider connection
+  async createProviderConnection(data: CreateProviderRequest): Promise<ApiResponse<ProviderConnection>> {
+    return apiClient.post<ProviderConnection>('/v1/provider-connections/', data);
+  },
+
+  // Update provider connection
+  async updateProviderConnection(id: number, data: Partial<CreateProviderRequest>): Promise<ApiResponse<ProviderConnection>> {
+    return apiClient.patch<ProviderConnection>(`/v1/provider-connections/${id}/`, data);
+  },
+
+  // Delete provider connection
+  async deleteProviderConnection(id: number): Promise<ApiResponse<void>> {
+    return apiClient.delete<void>(`/v1/provider-connections/${id}/`);
+  },
+};
+
 // Export all API functions
 const api = {
   auth: authApi,
   user: userApi,
+  provider: providerApi,
   client: apiClient,
 };
 

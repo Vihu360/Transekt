@@ -32,3 +32,56 @@ body {
   border-color: #314c35 !important;
 }
 
+/* Custom styles for provider configuration modal */
+.provider-config-modal .ant-modal-content {
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.provider-config-modal .ant-modal-header {
+  border-bottom: none;
+  padding: 0;
+}
+
+.provider-config-modal .ant-modal-body {
+  padding: 0;
+}
+
+.provider-config-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.provider-config-modal .ant-input,
+.provider-config-modal .ant-input-password {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.provider-config-modal .ant-input:focus,
+.provider-config-modal .ant-input-password:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.provider-config-modal .ant-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+  padding: 0 24px;
+}
+
+.provider-config-modal .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.provider-config-modal .ant-switch-checked {
+  background-color: #10b981;
+}
+

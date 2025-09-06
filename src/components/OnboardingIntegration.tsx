@@ -28,10 +28,6 @@ export function useOnboardingModal() {
   };
 }
 
-/**
- * Integration component that can be added to any page
- * Shows onboarding modal based on user state
- */
 export default function OnboardingIntegration() {
   const { showOnboarding, setShowOnboarding } = useOnboardingModal();
 

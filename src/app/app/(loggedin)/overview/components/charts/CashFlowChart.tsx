@@ -27,8 +27,8 @@ export default function CashFlowChart() {
           const { ctx, chartArea } = chart;
           if (!chartArea) return "#1D8CF8";
           const gradient = ctx.createLinearGradient(0, 0, chartArea.width, 0);
-          gradient.addColorStop(0, "#27AE60"); // Bright Blue
-          gradient.addColorStop(1, "#219150"); // Teal
+          gradient.addColorStop(0, "#1D8CF8"); // Bright Blue
+          gradient.addColorStop(1, "#1D8CF8"); // Teal
           return gradient;
         },
         backgroundColor: (context) => {
@@ -36,19 +36,19 @@ export default function CashFlowChart() {
           const { ctx, chartArea } = chart;
           if (!chartArea) return "rgba(29,140,248,0.1)";
           const gradient = ctx.createLinearGradient(0, 0, 0, chartArea.height);
-          gradient.addColorStop(0, "rgba(29,140,248,0.25)"); // Blue fade
-          gradient.addColorStop(1, "rgba(26,188,156,0.05)"); // Teal fade
+          gradient.addColorStop(0, "rgba(37, 99, 235, 0.35)");  // solidish blue (#2563EB)
+gradient.addColorStop(1, "rgba(147, 197, 253, 0.05)"); // Teal fade
           return gradient;
         },
         borderWidth: 2,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: "#27AE60", // Emerald green points
+        pointBackgroundColor: "#1D8CF8", // Emerald green points
         pointBorderColor: "#ffffff",
         pointBorderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 6,
-        pointHoverBackgroundColor: "#27AE60",
+        pointHoverBackgroundColor: "#1D8CF8",
         pointHoverBorderColor: "#ffffff",
         pointHoverBorderWidth: 2,
       }
@@ -96,7 +96,7 @@ export default function CashFlowChart() {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-teal-400 rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
@@ -120,7 +120,7 @@ export default function CashFlowChart() {
         <div>
           <p className="text-lg font-bold text-gray-900">+₹4,465.00</p>
         </div>
-        <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full">
+        <div className="flex items-center space-x-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
           </svg>

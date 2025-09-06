@@ -24,8 +24,8 @@ const chartData = {
     ...(showFailure ? [{
       label: 'Failure Payments',
       data: [12, 18, 22, 15, 20, 16, 25, 28, 18, 22, 24, 19],
-      backgroundColor: '#DC2626', // Professional green
-      borderColor: '#10B981',
+      backgroundColor: '#93C5FD', // Professional green
+      borderColor: '#93C5FD',
       borderWidth: 0,
       borderRadius: 4,
       borderSkipped: false,
@@ -151,11 +151,11 @@ const chartData = {
                 onClick={() => setShowFailure(!showFailure)}
                 className={`flex items-center space-x-2 px-3 py-1 rounded-md transition-colors cursor-pointer ${
                   showFailure 
-                    ? 'bg-red-50 text-[#DC2626] border border-red-200' 
+                    ? 'bg-white text-[#93C5FD] border border-[#93C5FD]' 
                     : 'bg-gray-50 text-gray-400 border border-gray-200'
                 }`}
               >
-                <div className={`w-3 h-3 rounded ${showFailure ? 'bg-[#DC2626]' : 'bg-gray-300'}`}></div>
+                <div className={`w-3 h-3 rounded ${showFailure ? 'bg-[#93C5FD]' : 'bg-gray-300'}`}></div>
                 <span className='text-sm font-medium'>Failure</span>
               </button>
             </div>

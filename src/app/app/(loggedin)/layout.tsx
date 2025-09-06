@@ -132,7 +132,7 @@ const Layout = ({
     },
     {
       key: "gateways",
-      icon: <SVGComponent src="GatewaysIcon" color="#000000" />,
+      icon: <SVGComponent src="MoneyIcon" color="#000000" />,
       label: "Providers",
       path: "/app/providers",
     },

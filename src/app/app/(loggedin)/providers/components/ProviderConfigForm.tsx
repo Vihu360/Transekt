@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Form, message, Select } from 'antd';
+import { Button, Input, Form, message, Select, Checkbox } from 'antd';
 import { providerApi, CreateProviderRequest } from '@/utils/api';
 
 interface ProviderConfigFormProps {
@@ -82,10 +82,11 @@ const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
     if (currentSchema) {
       if (provider.isNew) {
         // Initialize form with empty values for new providers
-        const initialValues: Record<string, string> = {};
+        const initialValues: Record<string, string | boolean> = {};
         currentSchema.fields.forEach(field => {
           initialValues[field.key] = '';
         });
+        initialValues.import_previous_transactions = false;
         form.setFieldsValue(initialValues);
       } else {
         // Pre-fill with existing credentials for existing providers
@@ -101,15 +102,25 @@ const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
   }, [provider.providerId, provider.isNew, provider.existingCredentials, provider.status, form, currentSchema]);
 
 
-  const handleSubmit = async (values: Record<string, string>) => {
+  const handleSubmit = async (values: Record<string, string | boolean>) => {
     setLoading(true);
     try {
       if (provider.isNew) {
         // Create new provider
+        // Extract only credential fields (exclude import_previous_transactions)
+        const credentials: Record<string, string> = {};
+        currentSchema.fields.forEach(field => {
+          const value = values[field.key];
+          if (typeof value === 'string') {
+            credentials[field.key] = value;
+          }
+        });
+
         const apiData: CreateProviderRequest = {
           provider: provider.providerId,
-          credentials: values,
-          status: 'active'
+          credentials: credentials,
+          status: 'active',
+          import: Boolean(values.import_previous_transactions)
         };
 
         console.log('Creating new provider:', apiData);
@@ -129,7 +140,7 @@ const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
         const updatedCredentials: Record<string, string> = {};
         currentSchema.fields.forEach(field => {
           const value = values[field.key];
-          if (value && value.trim() !== '') {
+          if (typeof value === 'string' && value.trim() !== '') {
             updatedCredentials[field.key] = value;
           }
         });
@@ -232,6 +243,24 @@ const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
             )}
           </Form.Item>
         ))}
+
+        {/* Import Previous Transactions - Only for new providers */}
+        {provider.isNew && (
+          <Form.Item
+            name="import_previous_transactions"
+            valuePropName="checked"
+            className="mb-4"
+          >
+            <div className="space-y-2">
+              <Checkbox className="text-sm text-gray-700">
+                Import previous transactions from this provider
+              </Checkbox>
+              <p className="text-xs text-gray-500 ml-6">
+                This will automatically import your historical transaction data from {currentSchema?.name} to help you get started with analytics and reporting.
+              </p>
+            </div>
+          </Form.Item>
+        )}
 
         {/* Status Toggle for existing providers */}
         {!provider.isNew && (

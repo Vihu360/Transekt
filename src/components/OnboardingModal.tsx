@@ -38,7 +38,7 @@ export default function OnboardingModal({
 
   const handleConnectProviders = () => {
     setIsOpen(false);
-    router.push("/connect");
+    router.push("/providers");
   };
 
   const handleGoToDashboard = () => {

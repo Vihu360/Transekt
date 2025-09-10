@@ -52,6 +52,7 @@ export interface CreateProviderRequest {
   provider: string;
   credentials: Record<string, string>;
   status: 'active' | 'revoked' | 'pending';
+  import?: boolean;
 }
 
 export interface Transaction {

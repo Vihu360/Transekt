@@ -225,7 +225,7 @@ const TransactionsPage = () => {
   return (
     <div style={{  minHeight: '100vh' }} className=''>
       {/* Header Card */}
-      <div className='p-5 bg-[#FFFFFF]/60 backdrop-blur-2xl rounded-t-4xl'>
+      <div className='px-6 pt-4 bg-[#FFFFFF]/60 backdrop-blur-2xl'>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <Avatar 
@@ -237,7 +237,6 @@ const TransactionsPage = () => {
                 justifyContent: 'center'
               }}
             >
-              <DownloadOutlined style={{ fontSize: '20px', color: 'white' }} />
             </Avatar>
             <div>
               <Title level={2} style={{ margin: 0, color: '#1f2937' }}>
@@ -262,7 +261,7 @@ const TransactionsPage = () => {
         </div>
       </div>
 
-      <div className='bg-[#FFFFFF]/60 backdrop-blur-2xl '>
+      <div className='bg-[#FFFFFF]/60 backdrop-blur-2xl px-6'>
         {/* Error Alert */}
         {error && (
           <div className='p-5'>
@@ -277,8 +276,18 @@ const TransactionsPage = () => {
         )}
 
         {/* Filters Card */}
-        <div className=' p-5'>
+        <div className='py-5'>
           <div className='flex items-center gap-2 w-full'>
+
+          <div>
+              <Input 
+                placeholder="Search transactions..." 
+                style={{ width: 300, borderRadius: '20px' }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
             <div>
               <Select
                 style={{ width: 120, borderRadius: '20px'}}
@@ -367,14 +376,7 @@ const TransactionsPage = () => {
               />
             </div>
 
-            <div>
-              <Input 
-                placeholder="Search transactions..." 
-                style={{ width: 300, borderRadius: '20px' }}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+            
           </div>
         </div>
 
@@ -389,7 +391,7 @@ const TransactionsPage = () => {
                 }
               </Text>
             </Space>
-            <Button 
+            {/* <Button 
                 type="primary" 
                 icon={<FilterOutlined />}
                 style={{ 
@@ -401,7 +403,7 @@ const TransactionsPage = () => {
                 }}
               >
                 Sort by
-              </Button>
+              </Button> */}
           </div>
 
           <Table

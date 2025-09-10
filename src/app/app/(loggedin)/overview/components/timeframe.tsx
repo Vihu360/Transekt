@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react";
-import { Dropdown, Button, DatePicker } from "antd";
+import { Dropdown, Button } from "antd";
 import type { MenuProps } from "antd";
 import SVGComponent from "@/app/svgcomponents";
 import { useState } from "react";
@@ -13,7 +13,7 @@ interface TimeFrameItem {
 
 const TimeFrame = () => {
   const [value, setValue] = useState("Last 7 days");
-  const { RangePicker } = DatePicker
+  // const { RangePicker } = DatePicker
 
   const timeFrame: TimeFrameItem[] = [
   { key: "last_7_days", label: "Last 7 days" },
@@ -42,7 +42,7 @@ const TimeFrame = () => {
         </Button>
       </Dropdown>
 
-      <RangePicker size={'middle'} />
+      {/* <RangePicker size={'middle'} /> */}
 
       <Button 
         className="flex items-center justify-end gap-2 cursor-pointer"

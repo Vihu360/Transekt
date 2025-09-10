@@ -59,8 +59,8 @@ const ProvidersPage = () => {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div style={{ minHeight: '100vh' }} className=''>
+        <div className='p-5 bg-[#FFFFFF]/60 backdrop-blur-2xl pl-6'>
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -75,8 +75,8 @@ const ProvidersPage = () => {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div style={{ minHeight: '100vh' }} className=''>
+        <div className='p-5 bg-[#FFFFFF]/60 backdrop-blur-2xl pl-6'>
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -96,65 +96,71 @@ const ProvidersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div style={{ minHeight: '100vh' }} className='bg-[#FFFFFF]/60 backdrop-blur-2xl'>
+      {/* Header Card */}
+      <div className='px-6 pt-4'>
         <Header onAddIntegration={handleAddIntegration} />
-        
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Connected Payment Providers</h2>
-              <p className="text-gray-600 mt-1">Manage your payment integrations and monitor their status.</p>
-            </div>
-            <SummaryStats totalActive={connectedProviders.map(provider => provider.status === 'active' ? 1 : 0).reduce((a, b) => a + b, 0)} 
-            monthlyVolume={connectedProviders.map(provider => parseFloat(provider.volume.replace('$', ''))).reduce((a, b) => a + b, 0)} />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {connectedProviders.map((provider, index) => (
-              <ProviderCard
-                key={index}
-                logo={provider.logo}
-                name={provider.name}
-                service={provider.service}
-                status={provider.status}
-                successRate={provider.successRate}
-                volume={provider.volume}
-                providerId={provider.providerId}
-                id={provider.id}
-                existingCredentials={provider.existingCredentials}
-                actionButton={provider.actionButton}
-              />
-            ))}
-            {connectedProviders.length === 0 && (
-              <div className="col-span-1 md:col-span-3 lg:col-span-4">
-                <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center">
-                  <p className="text-gray-600 text-center">No connected payment providers found.</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+      </div>
 
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Available Integrations</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {availableIntegrations.map((integration, index) => (
+      <div className='px-6'>
+        {/* Connected Providers Section */}
+        <div className='bg-[#FFFFFF] backdrop-blur-2xl rounded-t-4xl px-5'>
+          <div className="mb-8">
+            <div className="flex items-center justify-between py-4 w-full">
+              <div className='w-full'>
+                <h2 className="text-md font-semibold text-gray-900">Connected Payment Providers</h2>
+              </div>
+              <SummaryStats totalActive={connectedProviders.map(provider => provider.status === 'active' ? 1 : 0).reduce((a, b) => a + b, 0)} 
+              monthlyVolume={connectedProviders.map(provider => parseFloat(provider.volume.replace('$', ''))).reduce((a, b) => a + b, 0)} />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {connectedProviders.map((provider, index) => (
+                <ProviderCard
+                  key={index}
+                  logo={provider.logo}
+                  name={provider.name}
+                  service={provider.service}
+                  status={provider.status}
+                  successRate={provider.successRate}
+                  volume={provider.volume}
+                  providerId={provider.providerId}
+                  id={provider.id}
+                  existingCredentials={provider.existingCredentials}
+                  actionButton={provider.actionButton}
+                />
+              ))}
+              {connectedProviders.length === 0 && (
+                <div className="col-span-1 md:col-span-3 lg:col-span-4">
+                  <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center">
+                    <p className="text-gray-600 text-center">No connected payment providers found.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Available Integrations Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Available Integrations</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {availableIntegrations.map((integration, index) => (
+                <AvailableIntegrationCard
+                  key={index}
+                  logo={integration.logo}
+                  name={integration.name}
+                  providerId={integration.providerId}
+                  onClick={() => handleIntegrationClick(integration.name)}
+                />
+              ))}
               <AvailableIntegrationCard
-                key={index}
-                logo={integration.logo}
-                name={integration.name}
-                providerId={integration.providerId}
-                onClick={() => handleIntegrationClick(integration.name)}
+                logo="+"
+                name="More"
+                providerId=""
+                isMore={true}
+                onClick={handleMoreClick}
               />
-            ))}
-            <AvailableIntegrationCard
-              logo="+"
-              name="More"
-              providerId=""
-              isMore={true}
-              onClick={handleMoreClick}
-            />
+            </div>
           </div>
         </div>
       </div>

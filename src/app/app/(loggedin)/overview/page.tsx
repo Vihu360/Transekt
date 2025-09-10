@@ -10,7 +10,7 @@ import OnboardingIntegration from "@/components/OnboardingIntegration";
 
 const page = () => {
   return (
-    <div className="w-full h-full flex flex-col gap-4  text-black">
+    <div className="w-full h-full flex flex-col gap-4 px-6 text-black pt-4">
       <div className="w-full h-full flex items-center">
         <TimeFrame />
       </div>

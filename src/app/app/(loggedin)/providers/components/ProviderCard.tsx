@@ -31,8 +31,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
   existingCredentials,
   actionButton,
 }) => {
-
-  const {openModal} = useConfigureProviders();
+  const { openModal } = useConfigureProviders();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -51,7 +50,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
   const getActionButtonStyle = (variant: string) => {
     switch (variant) {
       case "configure":
-        return "bg-gradient-to-br from-[#1a4d70] via-[#165aa0] to-[#0a2b90] hover:from-[#10618c]"
+        return "bg-gradient-to-br from-[#1a4d70] via-[#165aa0] to-[#0a2b90] hover:from-[#10618c]";
       case "activate":
         return "bg-yellow-600 text-white hover:bg-yellow-700";
       case "fix":
@@ -63,37 +62,36 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
 
   const handleActionClick = () => {
     if (actionButton.variant === "configure") {
-      openModal({ 
-        name, 
-        service, 
-        status, 
-        successRate, 
-        volume, 
+      openModal({
+        name,
+        service,
+        status,
+        successRate,
+        volume,
         providerId,
         id,
         existingCredentials,
-        isNew: false 
+        isNew: false,
       });
     } else if (actionButton.variant === "activate") {
       console.log("Activate clicked");
     } else if (actionButton.variant === "fix") {
-      openModal({ 
-        name, 
-        service, 
-        status, 
-        successRate, 
-        volume, 
+      openModal({
+        name,
+        service,
+        status,
+        successRate,
+        volume,
         providerId,
         id,
         existingCredentials,
-        isNew: false 
+        isNew: false,
       });
     }
   };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 gap-4 transition-shadow flex flex-col items-between justify-center">
-
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start space-x-3">
           <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center text-white font-semibold">
@@ -108,14 +106,30 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
           <div
             className={`w-2 h-2 rounded-full ${getStatusColor(status)}`}
           ></div>
-          <span className={`text-sm font-medium capitalize ${status === "active" ? "text-green-600" : status === "pending" ? "text-yellow-600" : "text-red-600"} `}>{status}</span>
+          <span
+            className={`text-sm font-medium capitalize ${
+              status === "active"
+                ? "text-green-600"
+                : status === "pending"
+                ? "text-yellow-600"
+                : "text-red-600"
+            } `}
+          >
+            {status}
+          </span>
         </div>
       </div>
 
       <div className="space-y-3 ">
         <div className="flex justify-between">
           <span className="text-sm text-gray-600">Success Rate</span>
-          <span className={`text-sm font-medium ${successRate > "50" ? "text-green-600" : "text-red-600"}`}>{successRate || 0}</span>
+          <span
+            className={`text-sm font-medium ${
+              successRate > "50" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {successRate || 0}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-sm text-gray-600">Last 30 Days Volume</span>

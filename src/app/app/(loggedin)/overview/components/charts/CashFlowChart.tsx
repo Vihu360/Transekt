@@ -12,16 +12,32 @@ import LineChart from '@/app/components/lineChart';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Filler);
 
-export default function CashFlowChart() {
+interface MonthlyRevenue {
+  month: string;
+  month_name: string;
+  revenue: number;
+}
 
-  const cashFlowLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+interface CashFlowChartProps {
+  monthlyRevenue: MonthlyRevenue[];
+}
+
+export default function CashFlowChart({ monthlyRevenue }: CashFlowChartProps) {
+  // Process monthly revenue data
+  const processedData = monthlyRevenue.map(item => ({
+    label: item.month_name,
+    revenue: item.revenue
+  }));
+
+  const cashFlowLabels = processedData.map(item => item.label);
+  const revenueData = processedData.map(item => item.revenue);
 
   const cashFlowData = {
     labels: cashFlowLabels,
     datasets: [
       {
-        label: 'Cash Flow',
-        data: [12000, 15000, 18000, 16000, 22000, 25000, 28000, 32000, 29000, 35000, 38000, 42000],
+        label: 'Monthly Revenue',
+        data: revenueData,
         borderColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -73,7 +89,7 @@ gradient.addColorStop(1, "rgba(147, 197, 253, 0.05)"); // Teal fade
         padding: 12,
         callbacks: {
           title: (context) => context[0].label,
-          label: (context) => `Cash Flow: ₹${context.parsed.y.toLocaleString()}`
+          label: (context) => `Revenue: ₹${context.parsed.y.toLocaleString()}`
         }
       }
     },
@@ -118,13 +134,20 @@ gradient.addColorStop(1, "rgba(147, 197, 253, 0.05)"); // Teal fade
       {/* Summary */}
       <div className="flex items-center justify-between px-4">
         <div>
-          <p className="text-lg font-bold text-gray-900">+₹4,465.00</p>
+          <p className="text-lg font-bold text-gray-900">
+            ₹{revenueData[revenueData.length - 1]?.toLocaleString() || '0'}
+          </p>
         </div>
         <div className="flex items-center space-x-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
           </svg>
-          <span className="text-xs font-medium">+12%</span>
+          <span className="text-xs font-medium">
+            {revenueData.length > 1 ? 
+              `+${((revenueData[revenueData.length - 1] - revenueData[revenueData.length - 2]) / Math.max(revenueData[revenueData.length - 2], 1) * 100).toFixed(0)}%` : 
+              '0%'
+            }
+          </span>
         </div>
       </div>
     </div>

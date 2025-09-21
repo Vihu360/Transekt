@@ -1,22 +1,23 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Table, Button, Select, Tag, Avatar, Space, Typography, Input, Alert } from 'antd';
+import { Table, Button, Select, Tag, Avatar, Space, Typography, Input, Alert, message } from 'antd';
 import { 
   ExportOutlined, 
-  FilterOutlined, 
   UserOutlined,
   DownloadOutlined
 } from '@ant-design/icons';
 import { filterTransactions, useDebounce } from './helperFunctions/filteredTransactions';
 import { useTransactions } from './hooks/useTransactions';
 import { Transaction } from '../../../../utils/api';
+import { exportFormattedTransactionsToCSV, generateExportFilename } from '../../../../utils/csvExport';
 
 const { Title, Text } = Typography;
 
 const TransactionsPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -32,6 +33,7 @@ const TransactionsPage = () => {
 
   // Debounced search term
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [messageApi, contextHolder] = message.useMessage();
 
   // API integration
   const { 
@@ -64,6 +66,40 @@ const TransactionsPage = () => {
       updateFilters({
         [filterType]: value
       });
+    }
+  };
+
+  // Handle CSV export
+  const handleExportCSV = async () => {
+    try {
+      setIsExporting(true);
+      
+      // Export the currently filtered transactions
+      const transactionsToExport = filteredTransactions;
+      
+      if (transactionsToExport.length === 0) {
+        console.warn('No transactions to export');
+        return;
+      }
+      
+      // Generate filename based on current filters
+      const filename = generateExportFilename({
+        provider: filters.provider,
+        status: filters.status,
+        timeframe: filters.timeframe
+      });
+      
+      // Export to CSV
+      exportFormattedTransactionsToCSV(transactionsToExport, filename, true);
+      
+      // Show success message
+      messageApi.success(`Successfully exported ${transactionsToExport.length} transactions to CSV`);
+      
+    } catch (error) {
+      console.error('Error exporting transactions:', error);
+      messageApi.error('Failed to export transactions. Please try again.');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -224,6 +260,7 @@ const TransactionsPage = () => {
 
   return (
     <div style={{  minHeight: '100vh' }} className=''>
+      {contextHolder}
       {/* Header Card */}
       <div className='px-6 pt-4 bg-[#FFFFFF]/60 backdrop-blur-2xl'>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -248,14 +285,17 @@ const TransactionsPage = () => {
           
           <Space>
             <Button 
-              icon={<ExportOutlined />} 
+              icon={isExporting ? <DownloadOutlined /> : <ExportOutlined />} 
+              loading={isExporting}
+              onClick={handleExportCSV}
+              disabled={filteredTransactions.length === 0}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center',
                 fontWeight: 500
               }}
             >
-              Export
+              {isExporting ? 'Exporting...' : 'Export CSV'}
             </Button>
           </Space>
         </div>

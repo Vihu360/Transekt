@@ -1,8 +1,14 @@
 import { useState } from "react";
 
-const TotalTransactions = ({ totalTransactions }) => {
-  const [currency] = useState("₹");
-  const growth = "5%";
+interface TotalTransactionsProps {
+  totalTransactions: string;
+  currency?: string;
+  percentageChange?: number;
+}
+
+const TotalTransactions = ({ totalTransactions, currency = "₹", percentageChange = 0 }: TotalTransactionsProps) => {
+  const [currencySymbol] = useState(currency);
+  const growth = percentageChange > 0 ? `+${percentageChange}%` : `${percentageChange}%`;
 
   return (
 <div className="p-5 rounded-xl text-white bg-gradient-to-br from-[#1a4d70] via-[#165aa0] to-[#0a2b90] shadow-lg relative overflow-hidden">
@@ -23,12 +29,12 @@ const TotalTransactions = ({ totalTransactions }) => {
    
    {/* Content */}
    <div className="relative z-10">
-     <p className="text-sm font-medium opacity-80">Total Balance</p>
+     <p className="text-sm font-medium opacity-80">Total Revenue</p>
      <p className="mt-2 text-3xl font-bold">
-       {currency} {totalTransactions}
+       {currencySymbol} {totalTransactions}
      </p>
      <p className="mt- mb-1 text-sm opacity-70">
-       Your balance has grown by <span className="text-blue-300 font-semibold">{growth}</span> this month
+       Revenue has {percentageChange >= 0 ? 'grown' : 'decreased'} by <span className={`font-semibold ${percentageChange >= 0 ? 'text-green-300' : 'text-red-300'}`}>{growth}</span> this month
      </p>
    </div>
 </div>

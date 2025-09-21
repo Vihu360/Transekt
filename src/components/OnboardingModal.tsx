@@ -27,7 +27,6 @@ export default function OnboardingModal({
   open: externalOpen,
   onOpenChange,
   title = "You're almost there! 🎯",
-  hookMessage = "Connect your payment providers and see your data in one place — no more spreadsheets, just real-time insights.",
 }: OnboardingModalProps) {
   const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
@@ -38,7 +37,7 @@ export default function OnboardingModal({
 
   const handleConnectProviders = () => {
     setIsOpen(false);
-    router.push("/providers");
+    router.push("/app/providers");
   };
 
   const handleGoToDashboard = () => {

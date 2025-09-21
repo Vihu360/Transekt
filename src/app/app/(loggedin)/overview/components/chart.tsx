@@ -1,10 +1,18 @@
 import React from 'react'
-import FailureSucessComparison from './charts/failureSucessComparison'
+import DailyTransactionsChart from './charts/DailyTransactionsChart'
 
-const Chart = () => {
+interface ChartProps {
+  dailyTransactions: Array<{
+    date: string;
+    day_name: string;
+    transaction_count: number;
+  }>;
+}
+
+const Chart = ({ dailyTransactions }: ChartProps) => {
   return (
     <div className='w-full h-full flex items-end'>
-      <FailureSucessComparison />
+      <DailyTransactionsChart dailyTransactions={dailyTransactions} />
     </div>
   )
 }

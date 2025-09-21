@@ -124,24 +124,24 @@ const Layout = ({
       label: "Transactions",
       path: "/app/transactions",
     },
-    {
-      key: "analytics",
-      icon: <SVGComponent src="AnalyticsIcon" color="#000000" />,
-      label: "Analytics",
-      path: "/app/analytics",
-    },
+    // {
+    //   key: "analytics",
+    //   icon: <SVGComponent src="AnalyticsIcon" color="#000000" />,
+    //   label: "Analytics",
+    //   path: "/app/analytics",
+    // },
     {
       key: "gateways",
       icon: <SVGComponent src="MoneyIcon" color="#000000" />,
       label: "Providers",
       path: "/app/providers",
     },
-    {
-      key: "settings",
-      icon: <SVGComponent src="SettingsIcon" color="#000000" />,
-      label: "Settings",
-      path: "/app/settings",
-    },
+    // {
+    //   key: "settings",
+    //   icon: <SVGComponent src="SettingsIcon" color="#000000" />,
+    //   label: "Settings",
+    //   path: "/app/settings",
+    // },
   ];
 
  

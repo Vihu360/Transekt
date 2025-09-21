@@ -1,31 +1,49 @@
 "use client"
 import PolarChart from '@/app/components/polarChart';
 
-export default function GatewayComparison() {
-  const labels = ['Razorpay', 'Paypal', 'PhonePe', 'Stripe', 'Cashfree'];
+interface GatewayData {
+  gateway: string;
+  amount: number;
+  percentage: number;
+}
+
+interface GatewayComparisonProps {
+  gatewayData: GatewayData[];
+}
+
+export default function GatewayComparison({ gatewayData }: GatewayComparisonProps) {
+  // Process gateway data
+  const processedData = gatewayData.map(item => ({
+    label: item.gateway.charAt(0).toUpperCase() + item.gateway.slice(1),
+    amount: item.amount,
+    percentage: item.percentage
+  }));
+
+  const labels = processedData.map(item => item.label);
+  const amounts = processedData.map(item => item.amount);
+
+  // Color palette for different gateways
+  const colors = [
+    "rgba(30, 58, 138, 0.85)",  // Deep Navy Blue
+    "rgba(37, 99, 235, 0.8)",   // Royal Blue
+    "rgba(59, 130, 246, 0.75)", // Bright Azure
+    "rgba(96, 165, 250, 0.7)",  // Sky Blue
+    "rgba(147, 197, 253, 0.65)", // Light Blue
+    "rgba(99, 102, 241, 0.8)",  // Indigo
+    "rgba(139, 92, 246, 0.75)", // Purple
+    "rgba(168, 85, 247, 0.7)"   // Violet
+  ];
 
   const data = {
     labels: labels,
     datasets: [
       {
         label: 'Payment Gateway Usage',
-        data: [11, 16, 7, 3, 14],
-        backgroundColor: [
-          "rgba(30, 58, 138, 0.85)",  // Deep Navy Blue
-          "rgba(37, 99, 235, 0.8)",   // Royal Blue
-          "rgba(59, 130, 246, 0.75)", // Bright Azure
-          "rgba(96, 165, 250, 0.7)",  // Sky Blue
-          "rgba(147, 197, 253, 0.65)" // Light Blue
-        ],
-        
-        
-        
-        
-      
+        data: amounts,
+        backgroundColor: colors.slice(0, labels.length),
         borderWidth: 1.5
       }
     ]
-    
   };
 
   const options = {
@@ -53,7 +71,20 @@ export default function GatewayComparison() {
         borderColor: '#475569',
         borderWidth: 1,
         cornerRadius: 8,
-        displayColors: true
+        displayColors: true,
+        callbacks: {
+          title: function(context: { label: string }[]) {
+            return context[0].label;
+          },
+          label: function(context: { dataIndex: number }) {
+            const dataIndex = context.dataIndex;
+            const item = processedData[dataIndex];
+            return [
+              `Amount: ₹${item?.amount?.toLocaleString() || 0}`,
+              `Percentage: ${item?.percentage?.toFixed(1) || 0}%`
+            ];
+          }
+        }
       }
     },
     layout: {

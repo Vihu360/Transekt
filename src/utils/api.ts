@@ -89,6 +89,52 @@ export interface TransactionResponse {
   previous?: string;
 }
 
+// Dashboard Analytics API types
+export interface DailyTransaction {
+  date: string;
+  day_name: string;
+  transaction_count: number;
+}
+
+export interface MonthlyRevenue {
+  month: string;
+  month_name: string;
+  revenue: number;
+}
+
+export interface GatewayData {
+  gateway: string;
+  amount: number;
+  percentage: number;
+}
+
+export interface TotalRevenue {
+  current_month_revenue: number;
+  last_month_revenue: number;
+  percentage_change: number;
+  currency: string;
+}
+
+export interface GatewayBreakdown {
+  total_revenue: number;
+  gateways: GatewayData[];
+}
+
+export interface CashflowData {
+  monthly_revenue: MonthlyRevenue[];
+}
+
+export interface DailyVolume {
+  daily_transactions: DailyTransaction[];
+}
+
+export interface DashboardAnalytics {
+  total_revenue: TotalRevenue;
+  gateway_breakdown: GatewayBreakdown;
+  cashflow_data: CashflowData;
+  daily_volume: DailyVolume;
+}
+
 // Generic API client
 class ApiClient {
   private baseUrl: string;
@@ -319,12 +365,21 @@ export const transactionApi = {
   },
 };
 
+// Dashboard Analytics API functions
+export const dashboardApi = {
+  // Get dashboard analytics
+  async getAnalytics(): Promise<ApiResponse<DashboardAnalytics>> {
+    return apiClient.get<DashboardAnalytics>('/v1/dashboard/analytics/');
+  },
+};
+
 // Export all API functions
 const api = {
   auth: authApi,
   user: userApi,
   provider: providerApi,
   transaction: transactionApi,
+  dashboard: dashboardApi,
   client: apiClient,
 };
 

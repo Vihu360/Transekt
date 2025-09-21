@@ -34,11 +34,8 @@ const ProvidersPage = () => {
 
   // Mock data for available integrations
   const availableIntegrations = [
-    { logo: 'S', name: 'Stripe', providerId: 'stripe' },
-    { logo: 'P', name: 'PayPal (REST)', providerId: 'paypal_rest' },
-    { logo: 'PC', name: 'PayPal (Classic)', providerId: 'paypal_classic' },
-    { logo: 'LS', name: 'LemonSqueezy', providerId: 'lemonsqueezy' },
-    { logo: 'RZ', name: 'Razorpay', providerId: 'razorpay' }
+    { logo: '/gatewayLogo/stripe.jpeg', name: 'Stripe', providerId: 'stripe' },
+    { logo: '/gatewayLogo/razz.png', name: 'Razorpay', providerId: 'razorpay' }
   ];
 
   const handleAddIntegration = () => {
@@ -49,11 +46,6 @@ const ProvidersPage = () => {
   const handleIntegrationClick = (name: string) => {
     console.log(`Integration clicked: ${name}`);
     // Implement integration click logic
-  };
-
-  const handleMoreClick = () => {
-    console.log('More integrations clicked');
-    // Implement more integrations logic
   };
 
   // Show loading state
@@ -153,13 +145,6 @@ const ProvidersPage = () => {
                   onClick={() => handleIntegrationClick(integration.name)}
                 />
               ))}
-              <AvailableIntegrationCard
-                logo="+"
-                name="More"
-                providerId=""
-                isMore={true}
-                onClick={handleMoreClick}
-              />
             </div>
           </div>
         </div>

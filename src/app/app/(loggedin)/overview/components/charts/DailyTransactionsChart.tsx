@@ -1,6 +1,5 @@
 "use client"
 import BarChart from '@/app/components/barChart';
-import { useState } from 'react';
 
 interface DailyTransaction {
   date: string;
@@ -62,11 +61,11 @@ export default function DailyTransactionsChart({ dailyTransactions }: DailyTrans
         },
         padding: 12,
         callbacks: {
-          title: function(context: any) {
+          title: function(context) {
             const dataIndex = context[0].dataIndex;
             return processedData[dataIndex]?.date || context[0].label;
           },
-          label: function(context: any) {
+          label: function(context) {
             return `Transactions: ${context.parsed.y}`;
           }
         }
